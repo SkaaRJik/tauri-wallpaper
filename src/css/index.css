@@ -1,0 +1,12 @@
+@import "primeflex/primeflex.css";
+@import "primevue/resources/themes/mdc-dark-deeppurple/theme.css";
+
+body {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /*background-image: url("../assets/tumannost-oriona.jpg");*/
+    padding: 8px;
+    margin: 0px;
+    height: 100vh;
+}
