@@ -5,11 +5,11 @@ extern crate sxd_document;
 use std::{
     fs,
     fs::File,
-    io::{copy, Cursor},
     usize,
 };
 use std::error::Error;
 use std::io::Write;
+use std::path::PathBuf;
 use futures_util::stream::StreamExt;
 use rand::Rng;
 use reqwest;
@@ -41,13 +41,12 @@ async fn get_document_html(client: &reqwest::Client, url: String) -> scraper::Ht
     return document;
 }
 
-async fn download_chunk() -> Result<String, Box<dyn Error>> {
+async fn download_chunk(href: &str, image_path: PathBuf) -> Result<String, Box<dyn Error>> {
     let client = reqwest::Client::new();
 
-    let url = "https://images.hdqwalls.com/download/pubg-game-4k-qx-2560x1440.jpg"; // Замените на URL вашего изображения
-    let response = client.get(url).send().await?;
+    let response = client.get(href).send().await?;
 
-    let mut out = File::create("image.jpg")?;
+    let mut out = File::create(image_path)?;
     let mut stream = response.bytes_stream();
     while let Some(item) = stream.next().await {
         let chunk = item?;
@@ -108,16 +107,11 @@ async fn download_image(
                 let folder_path = std::path::Path::new(&download_folder);
 
                 if !folder_path.exists() {
-                    fs::create_dir(folder_path.clone())?;
+                    fs::create_dir_all(folder_path.clone())?;
                 }
                 let image_path = folder_path.join(image_name.clone());
-                let mut file = File::create(image_path)?;
 
-                let response = reqwest::get(href).await?;
-                // Create a cursor that wraps the response body
-                let mut content = Cursor::new(response.bytes().await?);
-                // Copy the content from the cursor to the file
-                copy(&mut content, &mut file)?;
+                download_chunk(href, image_path);
 
                 return Ok(format!("Image {} was saved", image_name));
             } else {
@@ -127,7 +121,7 @@ async fn download_image(
             return Err("Header selector not found".into());
         }
     }
-    Err(format!("{page_url} Page not found").into())
+    return Err(format!("{page_url} Page not found").into());
 }
 
 async fn download_pictures(
