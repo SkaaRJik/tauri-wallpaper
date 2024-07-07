@@ -25,6 +25,9 @@ sxd-document = "0.3.2"
 scraper = "0.19.0"
 rand = "0.8.5"
 futures-util = "0.3.30"
+chrono = "0.4.38"
+rand_chacha = "0.3.1"
+log = "0.4.22"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
